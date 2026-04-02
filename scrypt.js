@@ -18,24 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    // Navegação
-    nextPageBtn.addEventListener('click', () => {
-        mainPage.classList.add('hidden');
-        secretPage.classList.remove('hidden');
-    });
-
-    backBtn.addEventListener('click', () => {
-        secretPage.classList.add('hidden');
-        mainPage.classList.remove('hidden');
-    });
-
     // Desenhar um coração
     function drawHeart(x, y, size, opacity) {
         ctx.save();
         ctx.translate(x, y);
         ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
         ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
 
         const s = size;
         ctx.beginPath();
@@ -50,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore();
     }
 
-    // Efeito de Corações - Versão Otimizada
+    // Efeito de Corações - Versão Centralizada
     heartsButton.addEventListener('click', () => {
         if (isAnimating) return;
 
@@ -58,28 +47,27 @@ document.addEventListener('DOMContentLoaded', () => {
         heartsButton.disabled = true;
 
         const hearts = [];
-        const numHearts = 15;
+        const numHearts = 30; // Mais corações para um efeito melhor
         let animationFrame = null;
-        let startTime = Date.now();
-        const duration = 1500; // 1.5 segundos para animar os corações
+        
+        // Ponto central da tela (onde está a foto)
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
 
-        // Criar corações em posições aleatórias
+        // Criar corações saindo do centro
         for (let i = 0; i < numHearts; i++) {
             hearts.push({
-                x: Math.random() * canvas.width,
-                y: canvas.height + 50,
-                vx: (Math.random() - 0.5) * 3,
-                vy: -2 - Math.random() * 3,
-                size: 15 + Math.random() * 15,
-                life: 1,
-                decay: 0.005 + Math.random() * 0.005
+                x: centerX,
+                y: centerY,
+                vx: (Math.random() - 0.5) * 8, // Velocidade horizontal aleatória
+                vy: (Math.random() - 0.5) * 8, // Velocidade vertical aleatória
+                size: 10 + Math.random() * 20,
+                life: 1.0,
+                decay: 0.01 + Math.random() * 0.02
             });
         }
 
         function drawHearts() {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             let allDead = true;
@@ -91,9 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Atualizar posição
                     heart.x += heart.vx;
                     heart.y += heart.vy;
-                    heart.vy += 0.1; // Gravidade suave
+                    
+                    // Gravidade bem leve para eles caírem devagar
+                    heart.vy += 0.05; 
 
-                    // Reduzir vida
+                    // Reduzir vida (transparência)
                     heart.life -= heart.decay;
 
                     // Desenhar coração
@@ -111,5 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         drawHearts();
+    });
+
+    // Navegação entre páginas
+    nextPageBtn.addEventListener('click', () => {
+        mainPage.classList.add('hidden');
+        secretPage.classList.remove('hidden');
+    });
+
+    backBtn.addEventListener('click', () => {
+        secretPage.classList.add('hidden');
+        mainPage.classList.remove('hidden');
     });
 });
